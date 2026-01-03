@@ -1,0 +1,30 @@
+/* Content script styles for Instagram Follower Checker */
+
+#ig-checker-indicator {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+}
+
+/* Highlight users not following back when on their profile */
+.ig-checker-not-following-back::after {
+  content: '❌ Not following you';
+  display: inline-block;
+  background: #f5576c;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  font-weight: 600;
+}
+
+.ig-checker-fan::after {
+  content: '💜 Fan';
+  display: inline-block;
+  background: #667eea;
+  color: white;
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-left: 8px;
+  font-weight: 600;
+}
