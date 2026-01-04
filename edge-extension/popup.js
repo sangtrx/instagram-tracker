@@ -174,16 +174,31 @@ async function pollProgress(tabId) {
       addLog(`${state.notFollowingBack.length} not following back`, 'info');
       addLog(`${state.fans.length} fans you don't follow`, 'info');
       
-      // Cache the data
-      await chrome.storage.local.set({ 
-        igFollowerData: {
-          followers: state.followers,
-          following: state.following,
-          notFollowingBack: state.notFollowingBack,
-          fans: state.fans,
-          lastUpdated: new Date().toISOString()
-        }
-      });
+      // Cache the data - strip base64 images to avoid quota exceeded error
+      const stripProfilePics = (users) => users.map(u => ({
+        username: u.username,
+        fullName: u.fullName,
+        isVerified: u.isVerified,
+        userId: u.userId,
+        // Only keep URL, not base64 (base64 is too large for storage)
+        profilePic: u.profilePic && !u.profilePic.startsWith('data:') ? u.profilePic : null
+      }));
+      
+      try {
+        await chrome.storage.local.set({ 
+          igFollowerData: {
+            followers: stripProfilePics(state.followers),
+            following: stripProfilePics(state.following),
+            notFollowingBack: stripProfilePics(state.notFollowingBack),
+            fans: stripProfilePics(state.fans),
+            lastUpdated: new Date().toISOString()
+          }
+        });
+        addLog('Data cached successfully', 'success');
+      } catch (storageError) {
+        console.warn('Could not cache data:', storageError);
+        addLog('Warning: Could not cache data (storage full)', 'info');
+      }
       
       addLog('Analysis complete! ✓', 'success');
       showResults();
